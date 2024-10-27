@@ -1,0 +1,98 @@
+ body {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(73, 156, 193);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: rgb(252, 252, 252);
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: rgb(85, 85, 85);
+}
+
+input[type="text"] {
+    width: calc(100% - 97px);
+    padding: 10px;
+    border: 1px solid  rgb(73, 156, 193);
+    margin-right: 10px;
+    font-size: 16px;
+    color: rgb(8, 147, 219);
+}
+
+input[type="text"]:focus {
+    border: 1px solid rgb(240, 201, 126);
+    outline: none;
+}
+
+input[type="text"]::placeholder {
+    color: rgb(169, 179, 203);
+    text-align: center;
+    font-size: 16px;
+}
+
+button {
+    background-color: rgb(88, 163, 199);
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    color: rgb(255, 255, 255);
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgb(240, 249, 255);
+    padding: 10px;
+    margin: 5px 0;
+    color: rgb(88, 163, 199);
+    border: 1px solid rgb(233, 233, 233);
+}
+
+.edit-task,.remove-task {
+    margin-left: auto;
+    color: lavender;
+    font-size: 18px;
+}
+
+.edit-task:hover ,.remove-task:hover{
+    color: rgb(88, 163, 199);
+}
+
+.task-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.remove-task {
+    color: lavender;
+    margin-left: 20px;
+}
+
+.remove-task:hover {
+    color: rgb(88, 163, 199);
+}
+
+.task-count {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.task-count button {
+    padding: 5px 10px;
+    background-color: rgb(88, 163, 199);
+    font-size: 1rem;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+}
+
+.task-count button:disabled {
+    background-color: rgb(252, 252, 252);
+}
