@@ -1,10 +1,9 @@
-import React from 'react'
-import TodoApp from './component/Todo_list'
-
+import TodoApp from "./Todo/TodoApp
+  
 export default function App() {
   return (
     <div>
       <TodoApp />
     </div>
-  )
+  );
 }
