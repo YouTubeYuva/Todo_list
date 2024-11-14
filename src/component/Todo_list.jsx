@@ -1,125 +1,120 @@
-import React, { useState } from 'react';
-import './Todo_list.css';
+import React, { useState } from "react";
+import _ from "lodash";
+import "./td.css";
 
-export default function TodoApp() { 
-    const [taskInput, setTaskInput] = useState('');
-    const [tasks, setTasks] = useState([]);
-    const [editIndex, setEditIndex] = useState(null);
-    const [editText, setEditText] = useState('');
-
-    const addTask = () => {
-        if (taskInput.trim()) {
-            setTaskInput('');
-            setTasks([...tasks, { text: taskInput, completed: false }]);
-        }
-    };
-
-    const checkboxChange = (index) => {
-        setTasks(tasks.map((task, idx) => {
-            if (idx === index) {
-                return { ...task, completed: !task.completed };
-            } else {
-                return task;
-            }
-        }));
-    };
-
-    const removeTask = (index) => {
-        setTasks(tasks.filter((item, idx) => idx !== index));
-    };
-
-    const removeCheckedTasks = () => {
-        setTasks(tasks.filter((task) => !task.completed));
-    };
-
-    const handleEditStart = (index) => {
-        setEditIndex(index);
-        setEditText(tasks[index].text);
-    };
-
-    const handleEditSave = (index) => {
-        setTasks(tasks.map((task, idx) => {
-            if (idx === index) {
-                return { ...task, completed: !task.completed };
-            } else {
-                return task
-            }
-        }));
-        setEditIndex(null);
-        setEditText('');
-    };
-
-    const completedTasksCount = tasks.filter(task => task.completed).length;
-    const totalTasksCount = tasks.length;
-    const completepercentage = totalTasksCount ? (completedTasksCount / totalTasksCount) * 100 : 0;
-
-    return (
-        <div className="container">
-            <h1>TODOLIST</h1>
-            <div>
-                <input
-                    type="text"
-                    value={taskInput}
-                    onChange={(e) => setTaskInput(e.target.value)}
-                    placeholder='What needs to be done?'
-                />
-                <button onClick={addTask}>+</button>
-            </div>
-            <div>
-                {tasks.map((task, index) => (
-                    <div key={index} className="task-item">
-                        <input
-                            type="checkbox"
-                            checked={task.completed}
-                            onChange={() => checkboxChange(index)}
-                        />
-                        <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-                            {(() => {
-                                if (editIndex === index) {
-                                    return (
-                                        <input
-                                            type="text"
-                                            value={editText}
-                                            onChange={(e) => setEditText(e.target.value)}
-                                            onBlur={() => handleEditSave(index)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleEditSave(index)}
-                                        />
-                                    );
-                                } else {
-                                    return task.text;
-                                }
-                            })()}
-                        </span>
-                        {(() => {
-                            if (editIndex !== index) {
-                                return (
-                                    <span className="edit-task" onClick={() => handleEditStart(index)}>
-                                        🖉
-                                    </span>
-                                );
-                            }
-                            return null;
-                        })()}
-                        <span className="remove-task" onClick={() => removeTask(index)}> 🗙 </span>
-                    </div>
-                ))}
-            </div>
-            <div className="task-count">
-                <button
-                    style={{ backgroundColor: completepercentage >= 100 ? 'green' : '' }}
-                    disabled={tasks.length === 0}
-                >
-                    {completedTasksCount} of {totalTasksCount} tasks done
-                </button>
-                <button
-                    className="remove-button"
-                    onClick={removeCheckedTasks}
-                    disabled={completedTasksCount === 0}
-
-                >
-                    Remove checked 🗙
-                </button>
-            </div>
-        </div>
-    );
+interface Data {
+  id: number;
+  value: string;
+  completed: boolean;
 }
+
+type Todo = "all" | "active" | "completed";
+
+export default function TodoApp() {
+  const [value, setValue] = useState<string>("");
+  const [data, setData] = useState<Data[]>([]);
+  const [filter, setFilter] = useState<Todo>("all");
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && value.trim()) {
+      event.preventDefault();
+      setData((prev) => [
+        ...prev,
+        {
+          id: Math.random(),
+          value: value.trim(),
+          completed: false,
+        },
+      ]);
+      setValue("");
+    }
+  };
+
+  const handleCheckbox = (id: number) => {
+    setData(
+      _.map(data, (item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
+
+  const handleRemove = (id: number) => {
+    setData(_.filter(data, (item) => item.id !== id));
+  };
+
+  const handleClick = (item: Todo) => {
+    setFilter(item);
+  };
+
+  const filteredData = (() => {
+    if (filter === "active") {
+      return _.filter(data, (item) => !item.completed);
+    } else if (filter === "completed") {
+      return _.filter(data, (item) => item.completed);
+    } else {
+      return data;
+    }
+  })();
+
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setData(_.map(data, (item) => ({ ...item, completed: event.target.checked})));
+  };
+
+  return (
+    <div className="header">
+      <h1>todos</h1>
+      <div className="div_input">
+        <div>
+        <input
+          type="checkbox"
+          onChange={handleSelectAll}
+          checked={data.length > 0 && _.every(data, (item) => item.completed)}
+        />
+        </div>
+        <div>
+        <input
+          type="text"
+          value={value}
+          onKeyDown={handleKeyPress}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setValue(event.target.value)
+          }
+          placeholder="What needs to be done?"
+        />
+        </div>
+      </div>
+      <div>
+        <div>
+          {_.map(filteredData, (item) => (
+            <div key={item.id} className="todo-item">
+              <input
+                type="checkbox"
+                checked={item.completed}
+                onChange={() => handleCheckbox(item.id)}
+              />
+              <span>{item.value}</span>
+              <button className="todo-remove" onClick={() => handleRemove(item.id)}>x</button>
+            </div>
+          ))}
+        </div>
+        {data.length > 0 && (
+          <div className="footer">
+            <span className="todo-count">
+              {_.filter(data, (item) => !item.completed).length} items left!
+            </span>
+            <button className="todo-all" onClick={() => handleClick("all")}>All</button>
+            <button className="todo-active" onClick={() => handleClick("active")}>Active</button>
+            <button className="todo-completed" onClick={() => handleClick("completed")}>Completed</button>
+            <button
+              className="todo-clear-completed"
+              onClick={() => setData(_.filter(data, (item) => !item.completed))}
+            >
+              Clear Completed
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+    
